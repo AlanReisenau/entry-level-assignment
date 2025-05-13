@@ -16,10 +16,10 @@ This project involves developing a simple React application that displays a tabl
 3. **Cell Formatting**
     - Format the balance field to display as currency (e.g., $1,000.00).
 
-4**Styling**:
+4. **Styling**:
     - We are not looking for a pixel-perfect design, use styled-components to pass props to change colors, font-sizes, etc.
 
-5**Typescript**:
+5. **Typescript**:
    - Use of typescript is not required but is a bonus.
 
 ## Development Setup
