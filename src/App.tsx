@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useMemo, useState} from "react";
 import { AgGridReact } from "ag-grid-react";
 
 import "ag-grid-community/styles/ag-grid.css";
@@ -16,7 +16,7 @@ type Row = {
 
 function App() {
   const [search, setSearch] = useState<string>("");
-  const [selectedRowID, setSelectedRowID] = useState(false);
+  const [selectedRowID, setSelectedRowID] = useState<number | false>(false);
 
   // filtering should happen from the values in rowData, use the option to filter the desired column based on the user search.
   // colDefs should be dynamic, same work you do to the options can be done to it.
@@ -30,7 +30,7 @@ function App() {
       field: "ip_address",
       cellRenderer: (params) => {
         const currentNodeId = params.node.id;
-        if (false) {
+        if (selectedRowID === params.data.id) {
           // in here you will check if you want to render the ip address or not.
           return params.value;
         }
@@ -39,10 +39,10 @@ function App() {
       onCellClicked: (params) => {
         const currentNodeId = params.node.id;
         console.log("current cell clicked", currentNodeId);
-        // setSelectedRowID();
+        setSelectedRowID(params.data.id == selectedRowID ? false : params.data.id)// setSelectedRowID();
       },
     },
-    { field: "balance", valueFormatter: (p) => "$" + p.value }, // in here you will finish formatting the balance,
+    { field: "balance", valueFormatter: (p) => `$${p.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` }, // in here you will finish formatting the balance,
   ] as const;
 
   const [selectedOption, setSelectedOption] =
@@ -54,21 +54,31 @@ function App() {
       value: string;
     }[] = [];
 
+    const uniqueFields = new Set<string>();
+
     rowData.map((row: Row) => {
       return Object.entries(row).map((e) => {
         const [label] = e;
-
-        // filter the options to not have duplicate values
-
-        opt.push({
-          label,
-          value: label,
-        });
+        if (!uniqueFields.has(label)) {
+          uniqueFields.add(label);
+          opt.push({
+            label,
+            value: label,
+          });
+        }
       });
     });
 
     return opt;
   };
+
+  const filteredData = useMemo(() => {
+    if (!search) return rowData;
+    return rowData.filter((row: Row) => {
+      const fieldValue = row[selectedOption];
+      return fieldValue?.toString().toLowerCase().includes(search.toLowerCase());
+    });
+  }, [search, selectedOption, rowData]);
 
   const defaultColDef = {
     flex: 1,
@@ -93,7 +103,11 @@ function App() {
           setSelectedOption(e as (typeof columnDefs)[number]["field"])
         }
       />
-      <AgGridReact defaultColDef={defaultColDef} rowData={[]} columnDefs={[]} />
+      <AgGridReact
+          defaultColDef={defaultColDef}
+          rowData={filteredData}
+          columnDefs={columnDefs}
+      />
     </div>
   );
 }
