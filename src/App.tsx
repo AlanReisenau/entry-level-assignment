@@ -73,6 +73,7 @@ function App() {
     return opt;
   };
 
+  //implement dynamic search
   const filteredData = useMemo(() => {
     if (!search) return rowData;
     return rowData.filter((row: Row) => {
