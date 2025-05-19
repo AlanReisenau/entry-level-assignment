@@ -3,8 +3,9 @@ import { AgGridReact } from "ag-grid-react";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import { StyledInput, StyledSelect } from "./styles";
+import { StyledInput, StyledSelect, HeaderContainer, Logo, Title } from "./styles";
 import rowData from "./data.json";
+import logo from "../public/ga-fav-icon.png"
 
 type Row = {
   id: number;
@@ -85,30 +86,45 @@ function App() {
   };
 
   return (
-    <div
-      className="ag-theme-quartz"
-      style={{
-        height: 500,
-      }}
-    >
-      <StyledInput
-        $yourProp={true}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <StyledSelect
-        options={options()}
-        value={selectedOption}
-        onChange={(e) =>
-          setSelectedOption(e as (typeof columnDefs)[number]["field"])
-        }
-      />
-      <AgGridReact
-          defaultColDef={defaultColDef}
-          rowData={filteredData}
-          columnDefs={columnDefs}
-      />
-    </div>
+      <div style={{ padding: "1rem" }}>
+        <HeaderContainer>
+          <Logo src={logo} alt="Company Logo" />
+          <Title>Data Dashboard</Title>
+        </HeaderContainer>
+
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+          <StyledInput
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+          />
+          <StyledSelect
+              options={options()}
+              value={selectedOption}
+              onChange={(e) =>
+                  setSelectedOption(e as (typeof columnDefs)[number]["field"])
+              }
+          />
+        </div>
+
+        <div
+            className="ag-theme-quartz"
+            style={{
+              height: 500,
+              "--ag-header-background-color": "#2F4F4F",
+              "--ag-header-foreground-color": "#FFFFFF",
+              "--ag-border-color": "#4169E1",
+              "--ag-row-hover-color": "rgba(65, 105, 225, 0.1)",
+              "--ag-selected-row-background-color": "rgba(65, 105, 225, 0.2)",
+            } as React.CSSProperties}
+        >
+          <AgGridReact
+              defaultColDef={defaultColDef}
+              rowData={filteredData}
+              columnDefs={columnDefs}
+          />
+        </div>
+      </div>
   );
 }
 
